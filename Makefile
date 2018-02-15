@@ -1,25 +1,25 @@
-CC=gcc
+CC=g++
 COFLAGS=
 CWFLAGS=
-CIFLAGS=
+CIFLAGS=-I.
 CMFLAGS=
 CFLAGS= $(CWFLAGS) $(COFLAGS) $(CIFLAGS) $(CMFLAGS)
 
-all: lex.yy.o
-	gcc lex.yy.o
+all: beautify.out
 
-#beautify: beautify.o symbol.o init.o
-	#$(CC) $(CFLAGS) -obeautify $<
+beautify.out: lex.yy.o
+	$(CC) $(CFLAGS) -o $@ lex.yy.o
 
-.c.o:
+lex.yy.o: lex.yy.c beautify.h cbeautify.h
 	$(CC) $(CFLAGS) -c $<
 
 lex.yy.c: beautify.lex
 	flex beautify.lex
+
 
 .PHONY: clean
 
 clean:
 	rm -rf *.o
 	rm -rf *.out
-	rm *.yy.c
+	rm -rf *.yy.c
