@@ -19,24 +19,35 @@ std::string CBeautify::format (std::string token, Type type)
     std::string color;
     switch (type) {
 
+        case SPACE:
+            return "&nbsp;";
+
         case COMMENT:
             color = "#0000dd";
             break;
 
         case CHAR:
-            color = "#ff9900";
+            color = "pink";
             break;
 
         case STRING:
-            color = "#ff9900";
+            color = "purple";
             break;
 
         case DIRECTIVE:
             color = "#ff9900";
             break;
 
+        case KEYWORD:
+            color = "green";
+            break;
+
+        case DATATYPE:
+            color = "red";
+            break;
+
         default:
-            color = "#000000";
+            color = "black";
     }
 
     return "<span style=\"color:" + color + "\">" + token + "</span>";

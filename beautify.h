@@ -38,7 +38,7 @@ void Beautify::write (std::string token, Type type, bool isEnd)
 
         << this -> format (token, type);
 
-    if (isEnd) {
+    if (type == NEWLINE) {
         std::cout << "<br />" << std::endl;
     }
 }

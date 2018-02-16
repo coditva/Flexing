@@ -5,6 +5,7 @@
  */
 
 %option noyywrap
+%x mlc
 
 
 %{
@@ -37,6 +38,8 @@ digit           [0-9]
 expo            [eE][+-]{digit}+
 alphabet        [a-zA-Z]
 blank           [ ]
+keyword         (if|else|while|for|public|private|protected|return|typedef|extern|do|switch|case|default)
+datatype        (class|int|char|void|signed|long|unsigned|short)
 
 
 
@@ -47,17 +50,28 @@ blank           [ ]
 /* You might not like them, but you need to have rules */
 %}
 
-{quote}[{alphabet}{digit}]{quote}               beautifier.write (yytext, CHAR);
+{quote}.{quote}                                 beautifier.write (yytext, CHAR);
 {d_quote}.*{d_quote}                            beautifier.write (yytext, STRING);
 
-{slash}{slash}.*$                               beautifier.write (yytext, COMMENT, 1);
-{slash}{star}.*{star}{slash}                    beautifier.write (yytext, COMMENT);
+^{hash}.*$                                      beautifier.write (yytext, DIRECTIVE);
 
-{hash}.*$                                       beautifier.write (yytext, DIRECTIVE, 1);
+{slash}{slash}.*$                               beautifier.write (yytext, COMMENT);
 
-^.+$                                            beautifier.write (yytext, NONE, 1);
+{keyword}                                       beautifier.write (yytext, KEYWORD);
+{datatype}                                      beautifier.write (yytext, DATATYPE);
+
+(\ )                                            beautifier.write (" ", SPACE);
+(\n)                                            beautifier.write ("", NEWLINE);
 
 
+%{
+    /* Multi-line comment mode */
+%}
+{slash}{star}                   BEGIN(mlc);     beautifier.write (yytext, COMMENT);
+<mlc>{star}{slash}              BEGIN(INITIAL); beautifier.write (yytext, COMMENT);
+<mlc>(\n)                                       beautifier.write ("", NEWLINE);
+<mlc>(\ )                                       beautifier.write ("", SPACE);
+<mlc>.                                          beautifier.write (yytext, COMMENT);
 %%
 
 
